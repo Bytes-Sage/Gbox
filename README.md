@@ -48,12 +48,12 @@ go build -o gbox .
 sudo ./gbox run [--memory 100m] [--pids 20] [--rootfs ./rootfs] [--hostname foo] CMD [ARGS...]
 ```
 
-| Flag         | Default    | Meaning                                    |
-|--------------|------------|---------------------------------------------|
-| `--memory`   | `50m`      | Memory limit (`k`/`m`/`g` suffix, or bytes) |
-| `--pids`     | `20`       | Max number of processes inside the container |
-| `--rootfs`   | `./rootfs` | Path to the root filesystem to `chroot` into |
-| `--hostname` | `container`| Hostname visible inside the container       |
+| Flag         | Default     | Meaning                                      |
+| ------------ | ----------- | -------------------------------------------- |
+| `--memory`   | `50m`       | Memory limit (`k`/`m`/`g` suffix, or bytes)  |
+| `--pids`     | `20`        | Max number of processes inside the container |
+| `--rootfs`   | `./rootfs`  | Path to the root filesystem to `chroot` into |
+| `--hostname` | `container` | Hostname visible inside the container        |
 
 Examples:
 
@@ -81,7 +81,7 @@ have it apply cleanly — the runtime already has multiple OS threads
 running, and namespace flags apply per-thread at creation time via
 `clone()`. So `gbox` runs itself twice:
 
-1. **`gbox run CMD`** (the *parent*) — runs with your normal permissions.
+1. **`gbox run CMD`** (the _parent_) — runs with your normal permissions.
    Builds a command that re-executes `/proc/self/exe` as `gbox child CMD`,
    attaching `clone` flags that create five new namespaces for it. Once
    that child process exists, the parent creates a cgroup, applies the
@@ -99,13 +99,13 @@ limits are attached.
 
 ### The five namespaces
 
-| Flag              | Isolates                                  |
-|-------------------|---------------------------------------------|
-| `CLONE_NEWUTS`     | hostname / domain name                    |
-| `CLONE_NEWPID`     | process ID numbering                      |
-| `CLONE_NEWNS`      | mount table                               |
-| `CLONE_NEWIPC`     | System V IPC / message queues             |
-| `CLONE_NEWNET`     | network stack (empty — no networking until milestone 6) |
+| Flag           | Isolates                                                |
+| -------------- | ------------------------------------------------------- |
+| `CLONE_NEWUTS` | hostname / domain name                                  |
+| `CLONE_NEWPID` | process ID numbering                                    |
+| `CLONE_NEWNS`  | mount table                                             |
+| `CLONE_NEWIPC` | System V IPC / message queues                           |
+| `CLONE_NEWNET` | network stack (empty — no networking until milestone 6) |
 
 `Unshareflags: CLONE_NEWNS` plus a recursive `MS_PRIVATE` remount of `/`
 stop mounts made inside the container (like the fresh `/proc`) from leaking
@@ -141,16 +141,16 @@ gbox/
 
 ## Status
 
-| Milestone | What | Status |
-|---|---|---|
-| 0 | Run a command via `os/exec` | ✅ done |
-| 1 | Namespaces (UTS/PID/NS/IPC/NET) | ✅ done |
-| 2 | Root filesystem (`chroot` + `/proc`) | ✅ done |
-| 3 | Resource limits (cgroups v2) | ✅ done |
-| 4 | Real CLI, cleanup, signal handling, PID 1 | ✅ done |
-| 5 | `pivot_root` (stretch) | not started |
-| 6 | Networking — veth/bridge/NAT (stretch) | not started |
-| 7 | Pull a real image from a registry (stretch) | not started |
+| Milestone | What                                        | Status      |
+| --------- | ------------------------------------------- | ----------- |
+| 0         | Run a command via `os/exec`                 | ✅ done     |
+| 1         | Namespaces (UTS/PID/NS/IPC/NET)             | ✅ done     |
+| 2         | Root filesystem (`chroot` + `/proc`)        | ✅ done     |
+| 3         | Resource limits (cgroups v2)                | ✅ done     |
+| 4         | Real CLI, cleanup, signal handling, PID 1   | ✅ done     |
+| 5         | `pivot_root` (stretch)                      | not started |
+| 6         | Networking — veth/bridge/NAT (stretch)      | not started |
+| 7         | Pull a real image from a registry (stretch) | not started |
 
 ## Non-goals
 
@@ -162,9 +162,3 @@ Deliberately out of scope — see `scope.md` for the full reasoning:
 - No pulling images from a registry (unless milestone 7 happens)
 - Linux only — no Windows/macOS support
 - Not a Docker replacement — see project docs for how it compares
-
-## Docs in this repo
-
-- `scope.md` — the original project spec and milestone plan
-- `GUIDE.md` — full code walkthrough per milestone, with explanations
-- `EXPLAIN.md` — a plain-language explanation of the whole project
